@@ -117,7 +117,7 @@ Produtos disponíveis para perfil moderado:
 {json.dumps(produtos, indent=2, ensure_ascii=False)}
 
 Histórico de atendimentos anteriores:
-{df_hist['Tema'].unique().tolist()}
+{df_hist['tema'].unique().tolist()}
 
 PERGUNTA DO CLIENTE: {prompt}
 """
