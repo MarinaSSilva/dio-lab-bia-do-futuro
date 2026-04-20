@@ -4,8 +4,7 @@ Esta pasta é destinada a recursos visuais do seu projeto:
 
 ```
 assets/
-├── nina-logo.png        # Logo (já tem!)
-├── tela-inicial.png     # Screenshot (depois)
-├── chat-exemplo.png     # Screenshot (depois)
-└── badges.md            # Código das badges
+│   ├── README.md                   ← Explicação da pasta (original)
+│   ├── nina-logo.png               ← Sua logo
+│   └── badges.md                   ← Código das badges
 ```
