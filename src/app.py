@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import json
 from langchain_community.llms import Ollama
-from langchain.prompts import PromptTemplate
 
 # Configuração da página
 st.set_page_config(page_title="Nina - Coach Financeira", page_icon="🧠", layout="wide")
