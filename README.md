@@ -127,8 +127,9 @@ Roteiro de 3 minutos focado em:
 │ └── 05-pitch.md
 │
 ├── 📁 src/ # Código executável da Nina
-│ ├── app.py # Interface Streamlit
-│ └── utils.py # Motor de Contexto (Pré-processamento)
+│ ├── app.py              # Aplicação principal com todas as funções integradas
+│ ├── requirements.txt    # Dependências do projeto
+│ └── README.md           # Instruções de execução
 │
 └── 📁 assets/ # Diagrama Mermaid e Logo da Nina
 └── arquitetura.png
