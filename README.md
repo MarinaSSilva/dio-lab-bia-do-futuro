@@ -134,6 +134,7 @@ Roteiro de 3 minutos focado em:
 └── 📁 assets/ # Diagrama Mermaid e Logo da Nina
 └── arquitetura.png
 ```
+---
 
 ## 🏗️ Arquitetura da Nina
 
