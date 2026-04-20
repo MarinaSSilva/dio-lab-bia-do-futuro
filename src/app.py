@@ -113,6 +113,15 @@ Sobra do mês: R$ {insights['sobra']:.2f}
 Meta mensal necessária: R$ {insights['meta_mensal']}
 Gastos flexíveis (Restaurante/Uber/Netflix): R$ {insights['gastos_flexiveis']:.2f}
 
+Últimas transações:
+{df_trans.to_string()}
+
+Produtos disponíveis:
+{json.dumps(produtos, indent=2, ensure_ascii=False)}
+
+PERGUNTA DO CLIENTE: {prompt}
+"""
+
 Produtos disponíveis para perfil moderado:
 {json.dumps(produtos, indent=2, ensure_ascii=False)}
 
