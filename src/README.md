@@ -2,15 +2,18 @@
 
 Esta pasta contém o código-fonte do agente financeiro **Nina**, uma aplicação de Micro-Otimização de Hábitos desenvolvida com Streamlit e Ollama.
 
+---
+
 ## Estrutura do Código
 
+```
 src/
 ├── app.py # Aplicação principal (Interface Streamlit)
 ├── utils.py # Motor de contexto e pré-processamento de dados
 ├── prompts.py # System Prompt e templates (opcional)
 └── requirements.txt # Dependências do projeto
-
 ```
+
 ### Descrição dos Arquivos
 
 | Arquivo | Descrição |
@@ -24,15 +27,17 @@ src/
 
 ## 📦 Dependências (`requirements.txt`)
 
-```text
+```
+text
 streamlit>=1.28.0
 pandas>=2.0.0
 ollama>=0.1.0
 langchain>=0.1.0
 langchain-community>=0.1.0
 ```
+---
 
-Explicação de cada dependência:
+## Explicação de cada dependência:
 
 streamlit: Framework para interface web interativa.
 
@@ -46,21 +51,20 @@ langchain-community: Integração específica com Ollama.
 
 ---
 
-🚀 Como Rodar a Aplicação
-Pré-requisitos
-Python 3.9+ instalado.
+## 🚀 Como Rodar a Aplicação
 
-Ollama instalado e rodando localmente.
+### Pré-requisitos
 
-Download: https://ollama.ai
-
-Após instalar, baixe o modelo recomendado:
+1. Python 3.9+ instalado.
+2. Ollama instalado e rodando localmente.
+* Download: https://ollama.ai
+* Após instalar, baixe o modelo recomendado:
 
 ```
 ollama pull llama3.1:8b
 ```
 
-Verifique se o serviço está ativo:
+* Verifique se o serviço está ativo:
 
 ```
 ollama serve
@@ -68,7 +72,7 @@ ollama serve
 
 ---
 
-Passo a Passo
+## Passo a Passo
 1. Navegue até a pasta src/:
 
 ```
@@ -105,7 +109,7 @@ O Streamlit abrirá automaticamente em http://localhost:8501
 
 ---
 
-🧪 Testando a Aplicação
+## 🧪 Testando a Aplicação
 Após iniciar, você verá a interface da Nina com:
 
 Coluna Esquerda: Chat interativo para conversar com o agente.
@@ -126,7 +130,7 @@ Sugestões de perguntas para teste:
 
 ---
 
-🔧 Personalização
+## 🔧 Personalização
 Trocar o Modelo Ollama
 No arquivo app.py, localize a linha:
 
@@ -134,7 +138,7 @@ No arquivo app.py, localize a linha:
 llm = Ollama(model="llama3.1:8b")
 ```
 
-Substitua por qualquer modelo disponível localmente:
+### Substitua por qualquer modelo disponível localmente:
 
 ```
 llm = Ollama(model="mistral")      # Mais rápido
@@ -142,7 +146,7 @@ llm = Ollama(model="phi3")          # Mais leve
 llm = Ollama(model="llama3.1:70b") # Mais potente (requer mais RAM)
 ```
 
-Alterar os Dados Mockados
+### Alterar os Dados Mockados
 Os dados são carregados da pasta ../data/. Para testar com outros dados:
 
 Substitua os arquivos CSV/JSON mantendo os mesmos nomes.
@@ -151,7 +155,7 @@ Certifique-se de que as colunas do CSV mantêm a mesma estrutura.
 
 ---
 
-📊 Fluxo de Execução (Visão Geral)
+## 📊 Fluxo de Execução (Visão Geral)
 
 ```
 1. streamlit run app.py
@@ -173,7 +177,9 @@ Certifique-se de que as colunas do CSV mantêm a mesma estrutura.
 9. Resposta é exibida no chat
 ```
 
-🐛 Solução de Problemas Comuns
+---
+
+## 🐛 Solução de Problemas Comuns
 
 ```
 Erro	Causa Provável	Solução
@@ -184,7 +190,9 @@ Respostas muito lentas	Modelo pesado para seu hardware	Troque para phi3 ou tinyl
 ModuleNotFoundError	Dependência faltando	Execute pip install -r requirements.txt
 ```
 
-📝 Observações
+---
+
+## 📝 Observações
 Privacidade: Toda a execução é local. Nenhum dado é enviado para APIs externas.
 
 Custo: Zero. Ollama é gratuito e open-source.
@@ -192,7 +200,7 @@ Custo: Zero. Ollama é gratuito e open-source.
 Desempenho: Recomenda-se mínimo de 8GB RAM para llama3.1:8b.
 
 ```
-Esse `README.md` dentro da pasta `src/` complementa o README principal, fornecendo todas as instruções técnicas para quem quiser rodar o código. É uma prática excelente para projetos profissionais! 🚀
+Esse `README.md` dentro da pasta `src/` complementa o README principal, fornecendo todas as instruções técnicas para quem quiser rodar o código. 🚀
 ```
 
 
