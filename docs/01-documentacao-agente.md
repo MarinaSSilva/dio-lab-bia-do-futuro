@@ -126,4 +126,3 @@ flowchart TD
 2.  **Não Executa Transações:** É um agente de **consulta e simulação**. Não realiza PIX, TED ou aplicações.
 3.  **Não Substitui um Assessor Humano em Casos Complexos:** Para planejamento sucessório ou tributário avançado, Nina redireciona para o canal humano.
 4.  **Não Julga:** Se o cliente gastou R$ 500 em Ifood, Nina não diz "Isso é errado". Ela diz: *"Isso representa 10% da sua renda. Se essa é sua prioridade de bem-estar, ótimo. Mas se quiser trocar 10% desse valor por um aporte na meta do AP, eu mostro o caminho."*
-```
