@@ -95,3 +95,35 @@ flowchart TD
     
     J --> B2
     K --> B2
+
+```
+
+### Componentes
+
+| Componente | Descrição Técnica |
+|------------|-----------|
+| **Interface** | **Streamlit.** Layout de 2 colunas: (1) Chat proativo e (2) Painel de Métricas em tempo real. |
+| **LLM** | **Ollama** rodando localmente (Modelo sugerido: `llama3.1:8b` ou `mistral`). Custo zero e privacidade total dos dados mockados. |
+| **Base de Conhecimento** | **Dados Mockados da DIO.** `transacoes.csv`, `perfil_investidor.json`, `historico_atendimento.csv`, `produtos_financeiros.json`. Carregados em memória com `pandas`. |
+| **Motor de Contexto** | **Script Python (`utils.py`).** Responsável por calcular a "Taxa de Queima da Meta", "Gastos Discricionários" e formatar o prompt com regras rígidas. |
+| **Validação** | **Pós-Processamento de String.** Verifica se a resposta contém a palavra `[Fonte:` ou `[Calculado com:`. Se não contiver, a resposta é suprimida e substituída por uma mensagem de fallback seguro. |
+
+---
+
+## Segurança e Anti-Alucinação
+
+### Estratégias Adotadas
+
+- [x] **RAG Estrito (Fonte Obrigatória):** O System Prompt instrui a LLM a **NUNCA** fornecer um número ou fato sem citar o arquivo de origem (ex: `[Fonte: transacoes.csv, Linha 3]`).
+- [x] **Respostas Matemáticas Explicitas:** Para cálculos de juros ou simulações, a IA é forçada a mostrar a fórmula Python utilizada. Ex: `[Calculado com: valor * (1 + taxa)**tempo]`.
+- [x] **Fallback de Ignorância:** Se a pergunta extrapolar os dados disponíveis (ex: "Qual ação vai subir amanhã?"), o agente tem um gatilho para responder: *"Como Analista de Hábitos, não tenho bola de cristal para ações. Mas posso analisar seu extrato para ver se sobra capital para investir."*
+- [x] **Sem Recomendações Genéricas:** O agente **NÃO** diz "Invista em CDB". Ele diz: *"Com base no seu perfil **Moderado** e meta de **Liquidez**, o produto `CDB Liquidez Diária` listado no nosso arquivo se alinha ao seu momento. Quer ver a simulação?"*
+
+### Limitações Declaradas
+> O que o agente NÃO faz?
+
+1.  **Não Faz Previsões de Mercado:** Não opina sobre a direção futura da Taxa Selic, Dólar ou Bolsa de Valores.
+2.  **Não Executa Transações:** É um agente de **consulta e simulação**. Não realiza PIX, TED ou aplicações.
+3.  **Não Substitui um Assessor Humano em Casos Complexos:** Para planejamento sucessório ou tributário avançado, Nina redireciona para o canal humano.
+4.  **Não Julga:** Se o cliente gastou R$ 500 em Ifood, Nina não diz "Isso é errado". Ela diz: *"Isso representa 10% da sua renda. Se essa é sua prioridade de bem-estar, ótimo. Mas se quiser trocar 10% desse valor por um aporte na meta do AP, eu mostro o caminho."*
+```
