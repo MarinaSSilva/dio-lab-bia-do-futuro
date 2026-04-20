@@ -14,7 +14,7 @@ O problema não é falta de dinheiro (João teve uma sobra de R$ 2.511,10 em Out
 ### Solução
 > Como o agente resolve esse problema de forma proativa?
 
-Nina atua como um **Coach de Micro-Otimalização de Hábitos**, não como um robô de investimentos tradicional. Ela utiliza IA Generativa (Ollama) para cruzar dados estruturados (CSV/JSON) e gerar **insights contextuais** antes mesmo de o cliente perguntar.
+Nina atua como um **Coach de Micro-Otimização de Hábitos**, não como um robô de investimentos tradicional. Ela utiliza IA Generativa (Ollama) para cruzar dados estruturados (CSV/JSON) e gerar **insights contextuais** antes mesmo de o cliente perguntar.
 
 **Mecanismo Proativo:**
 1.  **Análise Silenciosa:** Ao carregar a aplicação, Nina calcula métricas como "Taxa de Queima da Meta" e "Gastos Discricionários".
