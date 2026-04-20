@@ -1,149 +1,178 @@
-# 🤖 Agente Financeiro Inteligente com IA Generativa
+# 🧠 Nina | Agente de Micro-Otimização Financeira com IA Generativa
 
-## Contexto
+![Badge](https://img.shields.io/badge/Status-Desafio%20DIO%20Concluído-green)
+![Badge](https://img.shields.io/badge/LLM-Ollama%20(Local)-blue)
+![Badge](https://img.shields.io/badge/Framework-Streamlit-red)
+![Badge](https://img.shields.io/badge/Parceria-Bradesco%20%7C%20DIO-orange)
 
-Os assistentes virtuais no setor financeiro estão evoluindo de simples chatbots reativos para **agentes inteligentes e proativos**. Neste desafio, você vai idealizar e prototipar um agente financeiro que utiliza IA Generativa para:
+## 📌 Contexto
 
-- **Antecipar necessidades** ao invés de apenas responder perguntas
-- **Personalizar** sugestões com base no contexto de cada cliente
-- **Cocriar soluções** financeiras de forma consultiva
-- **Garantir segurança** e confiabilidade nas respostas (anti-alucinação)
+Os assistentes virtuais no setor financeiro estão evoluindo de simples chatbots reativos para **agentes inteligentes e proativos**. Neste desafio, desenvolvemos a **Nina**, um agente que utiliza IA Generativa para resolver a **Dissonância Comportamental Financeira** — a lacuna entre o que o cliente planeja e o que realmente gasta.
 
-> [!TIP]
-> Na pasta [`examples/`](./examples/) você encontra referências de implementação para cada etapa deste desafio.
+A Nina atua como uma **Coach de Micro-Otimização de Hábitos**, focada em:
+- **Antecipar padrões** de comportamento nos dados de transações
+- **Personalizar sugestões** com base no perfil do investidor
+- **Cocriar micro-estratégias** de economia sustentável (ex: "Desafio dos 15%")
+- **Garantir segurança** absoluta via RAG Estrito e citação obrigatória de fontes
+
+> 💡 **Diferencial:** 100% local com **Ollama** + **Streamlit**. Custo zero, privacidade total.
 
 ---
 
-## O Que Você Deve Entregar
+## 📋 O Que Entregamos
 
 ### 1. Documentação do Agente
 
-Defina **o que** seu agente faz e **como** ele funciona:
+Defini a persona, o tom de voz e a arquitetura de segurança da Nina.
 
-- **Caso de Uso:** Qual problema financeiro ele resolve? (ex: consultoria de investimentos, planejamento de metas, alertas de gastos)
-- **Persona e Tom de Voz:** Como o agente se comporta e se comunica?
-- **Arquitetura:** Fluxo de dados e integração com a base de conhecimento
-- **Segurança:** Como evitar alucinações e garantir respostas confiáveis?
+- **Caso de Uso:** Micro-Otimização de Hábitos para acelerar metas de médio prazo (ex: Reserva de Emergência).
+- **Persona:** Nina (Navegadora de Intenções e Números Atípicos) — Analítica, acolhedora e educativa.
+- **Segurança:** Sistema de `[Fonte: arquivo]` obrigatório e bloqueio de respostas sem embasamento nos dados mockados.
 
-📄 **Template:** [`docs/01-documentacao-agente.md`](./docs/01-documentacao-agente.md)
+📄 **Documento:** [`docs/01-documentacao-agente.md`](./docs/01-documentacao-agente.md)
 
 ---
 
 ### 2. Base de Conhecimento
 
-Utilize os **dados mockados** disponíveis na pasta [`data/`](./data/) para alimentar seu agente:
+Utilizei e **enriqueci** os dados mockados da DIO com um motor de contexto Python.
 
-| Arquivo | Formato | Descrição |
-|---------|---------|-----------|
-| `transacoes.csv` | CSV | Histórico de transações do cliente |
-| `historico_atendimento.csv` | CSV | Histórico de atendimentos anteriores |
-| `perfil_investidor.json` | JSON | Perfil e preferências do cliente |
-| `produtos_financeiros.json` | JSON | Produtos e serviços disponíveis |
+| Arquivo | Utilização Estratégica |
+|---------|------------------------|
+| `transacoes.csv` | Cálculo da **Sobra Mensal** e **Índice de Gastos Discricionários** |
+| `perfil_investidor.json` | Extração do **Gap Financeiro** e **Taxa de Queima da Meta** |
+| `produtos_financeiros.json` | Matching de produtos com o perfil **Moderado** |
+| `historico_atendimento.csv` | **Memória de Curto Prazo** para evitar repetições |
 
-Você pode adaptar ou expandir esses dados conforme seu caso de uso.
-
-📄 **Template:** [`docs/02-base-conhecimento.md`](./docs/02-base-conhecimento.md)
+📄 **Documento:** [`docs/02-base-conhecimento.md`](./docs/02-base-conhecimento.md)
 
 ---
 
 ### 3. Prompts do Agente
 
-Documente os prompts que definem o comportamento do seu agente:
+O coração da Nina. Desenvolvi um System Prompt rigoroso para garantir respostas úteis e seguras.
 
-- **System Prompt:** Instruções gerais de comportamento e restrições
-- **Exemplos de Interação:** Cenários de uso com entrada e saída esperada
-- **Tratamento de Edge Cases:** Como o agente lida com situações limite
+- **System Prompt:** Define regras de anti-alucinação, tom de voz e estrutura de resposta (Few-Shot implícito).
+- **Exemplos de Interação:** Cenários reais com João Silva, mostrando a sugestão do "Desafio dos 15%".
+- **Edge Cases:** Tratamento para perguntas sobre clima, senhas e "como ficar rico rápido".
 
-📄 **Template:** [`docs/03-prompts.md`](./docs/03-prompts.md)
+📄 **Documento:** [`docs/03-prompts.md`](./docs/03-prompts.md)
 
 ---
 
 ### 4. Aplicação Funcional
 
-Desenvolva um **protótipo funcional** do seu agente:
+Protótipo interativo desenvolvido com **Streamlit** e **Ollama** (Modelo `llama3.1:8b` ou `mistral`).
 
-- Chatbot interativo (sugestão: Streamlit, Gradio ou similar)
-- Integração com LLM (via API ou modelo local)
-- Conexão com a base de conhecimento
+- **Interface:** Layout de duas colunas (Chat proativo + Painel de Métricas).
+- **Backend:** `pandas` para processamento de CSV/JSON e `langchain` para orquestração do prompt.
+- **Execução:** Roda 100% offline na máquina local.
 
-📁 **Pasta:** [`src/`](./src/)
+📁 **Código Fonte:** [`src/app.py`](./src/app.py)
 
 ---
 
 ### 5. Avaliação e Métricas
 
-Descreva como você avalia a qualidade do seu agente:
+Validei a qualidade do agente com uma matriz focada em **Assertividade Contextual**, **Segurança (Anti-Alucinação)** e **Coerência Comportamental**.
 
-**Métricas Sugeridas:**
-- Precisão/assertividade das respostas
-- Taxa de respostas seguras (sem alucinações)
-- Coerência com o perfil do cliente
+- **Teste 1:** Cálculo correto da meta mensal (R$ 625,00).
+- **Teste 2:** Sugestão de produtos de Baixo Risco para o perfil Moderado.
+- **Teste 3:** Fallback seguro para perguntas fora do escopo ("Cotação do Dólar").
 
-📄 **Template:** [`docs/04-metricas.md`](./docs/04-metricas.md)
+📄 **Documento:** [`docs/04-metricas.md`](./docs/04-metricas.md)
 
 ---
 
 ### 6. Pitch
 
-Grave um **pitch de 3 minutos** (estilo elevador) apresentando:
+Roteiro de 3 minutos focado em:
+1.  **Problema:** A ansiedade de não ver o progresso financeiro.
+2.  **Solução:** Nina cruzando intenção vs. realidade.
+3.  **Inovação:** IA local que sugere micro-ajustes, não cortes radicais.
 
-- Qual problema seu agente resolve?
-- Como ele funciona na prática?
-- Por que essa solução é inovadora?
-
-📄 **Template:** [`docs/05-pitch.md`](./docs/05-pitch.md)
-
----
-
-## Ferramentas Sugeridas
-
-Todas as ferramentas abaixo possuem versões gratuitas:
-
-| Categoria | Ferramentas |
-|-----------|-------------|
-| **LLMs** | [ChatGPT](https://chat.openai.com/), [Copilot](https://copilot.microsoft.com/), [Gemini](https://gemini.google.com/), [Claude](https://claude.ai/), [Ollama](https://ollama.ai/) |
-| **Desenvolvimento** | [Streamlit](https://streamlit.io/), [Gradio](https://www.gradio.app/), [Google Colab](https://colab.research.google.com/) |
-| **Orquestração** | [LangChain](https://www.langchain.com/), [LangFlow](https://www.langflow.org/), [CrewAI](https://www.crewai.com/) |
-| **Diagramas** | [Mermaid](https://mermaid.js.org/), [Draw.io](https://app.diagrams.net/), [Excalidraw](https://excalidraw.com/) |
+📄 **Documento:** [`docs/05-pitch.md`](./docs/05-pitch.md)
 
 ---
 
-## Estrutura do Repositório
+## 🛠️ Ferramentas Utilizadas
+
+| Categoria | Ferramenta | Justificativa no Projeto |
+|-----------|------------|--------------------------|
+| **LLM** | Ollama (`llama3.1:8b`) | Execução local, sem custo de API e garantia de privacidade dos dados mockados. |
+| **Desenvolvimento** | Streamlit | Prototipagem rápida e visualização limpa das métricas comportamentais. |
+| **Orquestração** | LangChain | Gerenciamento eficiente do Prompt Template com injeção dinâmica de contexto. |
+| **Dados** | Pandas | Leitura e cálculo de métricas derivadas (Taxa de Queima) em memória. |
+
+---
+
+## 📁 Estrutura do Repositório
 
 ```
-📁 lab-agente-financeiro/
+📁 dio-lab-bia-do-futuro/
 │
-├── 📄 README.md
+├── 📄 README.md # Você está aqui
 │
-├── 📁 data/                          # Dados mockados para o agente
-│   ├── historico_atendimento.csv     # Histórico de atendimentos (CSV)
-│   ├── perfil_investidor.json        # Perfil do cliente (JSON)
-│   ├── produtos_financeiros.json     # Produtos disponíveis (JSON)
-│   └── transacoes.csv                # Histórico de transações (CSV)
+├── 📁 data/ # Dados mockados fornecidos pela DIO
+│ ├── historico_atendimento.csv
+│ ├── perfil_investidor.json
+│ ├── produtos_financeiros.json
+│ └── transacoes.csv
 │
-├── 📁 docs/                          # Documentação do projeto
-│   ├── 01-documentacao-agente.md     # Caso de uso e arquitetura
-│   ├── 02-base-conhecimento.md       # Estratégia de dados
-│   ├── 03-prompts.md                 # Engenharia de prompts
-│   ├── 04-metricas.md                # Avaliação e métricas
-│   └── 05-pitch.md                   # Roteiro do pitch
+├── 📁 docs/ # Documentação completa do desafio
+│ ├── 01-documentacao-agente.md
+│ ├── 02-base-conhecimento.md
+│ ├── 03-prompts.md
+│ ├── 04-metricas.md
+│ └── 05-pitch.md
 │
-├── 📁 src/                           # Código da aplicação
-│   └── app.py                        # (exemplo de estrutura)
+├── 📁 src/ # Código executável da Nina
+│ ├── app.py # Interface Streamlit
+│ └── utils.py # Motor de Contexto (Pré-processamento)
 │
-├── 📁 assets/                        # Imagens e diagramas
-│   └── ...
-│
-└── 📁 examples/                      # Referências e exemplos
-    └── README.md
+└── 📁 assets/ # Diagrama Mermaid e Logo da Nina
+└── arquitetura.png
 ```
 
 ---
 
-## Dicas Finais
+## 🚀 Como Executar a Nina Localmente
 
-1. **Comece pelo prompt:** Um bom system prompt é a base de um agente eficaz
-2. **Use os dados mockados:** Eles garantem consistência e evitam problemas com dados sensíveis
-3. **Foque na segurança:** No setor financeiro, evitar alucinações é crítico
-4. **Teste cenários reais:** Simule perguntas que um cliente faria de verdade
-5. **Seja direto no pitch:** 3 minutos passam rápido, vá ao ponto
+Siga os passos abaixo para rodar o agente na sua própria máquina (Windows, Linux ou MacOS):
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://github.com/MarinaSSilva/dio-lab-bia-do-futuro.git
+    cd dio-lab-bia-do-futuro
+    ```
+
+2.  **Instale as dependências:**
+    ```
+    pip install streamlit pandas langchain ollama
+    ```
+
+3.  **Certifique-se de que o Ollama está rodando:**
+    ```
+    ollama serve
+    ```
+
+**(Em outro terminal, baixe o modelo):**
+    ```
+    ollama pull llama3.1:8b
+    ```
+
+4.  **Execute a aplicação:**
+    ```
+    streamlit run src/app.py
+    ```
+
+5.  **Interaja com a Nina! Pergunte sobre gastos, metas ou peça uma simulação.**
+
+✨ Destaques e Aprendizados
+Anti-Alucinação Efetiva: A regra de [Fonte: ...] no System Prompt reduziu a quase zero as informações inventadas.
+
+Micro vs Macro: Aprendemos que sugerir "reduzir 15%" gera muito mais engajamento do que "cortar 100%".
+
+Poder dos Dados Pequenos: Com apenas 10 transações, conseguimos gerar um insight de alto valor, provando que a qualidade da análise é mais importante que o volume de dados.
+
+
