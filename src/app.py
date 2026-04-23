@@ -1,147 +1,271 @@
 import streamlit as st
 import pandas as pd
 import json
+from datetime import date
 from langchain_community.llms import Ollama
 
-# Configuração da página
 st.set_page_config(page_title="Nina - Coach Financeira", page_icon="🧠", layout="wide")
 
 st.title("🧠 Nina | Navegadora de Intenções e Números Atípicos")
 st.caption("Sua coach de micro-otimização financeira")
 
-# Carregar dados mockados
+
+# ---------------------------------------------------------------------------
+# 1. CARREGAMENTO DE DADOS
+# ---------------------------------------------------------------------------
+
 @st.cache_data
 def carregar_dados():
-    df_trans = pd.read_csv('../data/transacoes.csv')
-    df_hist = pd.read_csv('../data/historico_atendimento.csv')
-    
-    with open('../data/perfil_investidor.json', 'r', encoding='utf-8') as f:
+    df_trans = pd.read_csv("../data/transacoes.csv")
+    df_hist = pd.read_csv("../data/historico_atendimento.csv")
+
+    with open("../data/perfil_investidor.json", "r", encoding="utf-8") as f:
         perfil = json.load(f)
-    
-    with open('../data/produtos_financeiros.json', 'r', encoding='utf-8') as f:
+
+    with open("../data/produtos_financeiros.json", "r", encoding="utf-8") as f:
         produtos = json.load(f)
-    
+
     return df_trans, df_hist, perfil, produtos
+
 
 df_trans, df_hist, perfil, produtos = carregar_dados()
 
-# Calcular insights
-def calcular_insights(df_trans, perfil):
-    gasto_total = df_trans[df_trans['tipo'] == 'saída']['valor'].sum()
-    receita = df_trans[df_trans['tipo'] == 'entrada']['valor'].sum()
+
+# ---------------------------------------------------------------------------
+# 2. CÁLCULO DE INSIGHTS
+# FIX: meses_restantes calculado dinamicamente (antes era hardcoded = 8)
+# FIX: gastos_flexiveis agora filtra corretamente por tipo E categoria
+# ---------------------------------------------------------------------------
+
+def calcular_insights(df_trans: pd.DataFrame, perfil: dict) -> dict:
+    saidas = df_trans[df_trans["tipo"] == "saída"]
+    entradas = df_trans[df_trans["tipo"] == "entrada"]
+
+    gasto_total = saidas["valor"].sum()
+    receita = entradas["valor"].sum()
     sobra = receita - gasto_total
-    
-    meta_restante = perfil['metas'][0]['valor_necessario'] - perfil['reserva_emergencia_atual']
-    meses_restantes = 8  # Até Jun/2026
-    meta_mensal = meta_restante / meses_restantes
-    
-    gastos_flexiveis = df_trans[df_trans['categoria'].isin(['lazer', 'alimentacao', 'transporte']) & (df_trans['tipo'] == 'saída')]['valor'].sum()
-    
+
+    meta = perfil["metas"][0]
+    meta_restante = meta["valor_necessario"] - perfil["reserva_emergencia_atual"]
+
+    # Calcula meses restantes até o prazo da meta (ex: "2026-06-01")
+    prazo = date.fromisoformat(meta.get("prazo", "2026-06-01"))
+    hoje = date.today()
+    meses_restantes = max(
+        1,
+        (prazo.year - hoje.year) * 12 + (prazo.month - hoje.month),
+    )
+
+    meta_mensal = round(meta_restante / meses_restantes, 2)
+
+    # Gastos discricionários (saídas nas categorias flexíveis)
+    categorias_flexiveis = {"lazer", "alimentacao", "transporte"}
+    gastos_flexiveis = saidas[
+        saidas["categoria"].str.lower().isin(categorias_flexiveis)
+    ]["valor"].sum()
+
+    # Detalhe por categoria para o prompt (evita enviar df cru)
+    detalhe_gastos = (
+        saidas[saidas["categoria"].str.lower().isin(categorias_flexiveis)]
+        .groupby("categoria")["valor"]
+        .sum()
+        .round(2)
+        .to_dict()
+    )
+
     return {
-        'sobra': sobra,
-        'meta_restante': meta_restante,
-        'meta_mensal': round(meta_mensal, 2),
-        'gastos_flexiveis': gastos_flexiveis
+        "receita": round(receita, 2),
+        "gasto_total": round(gasto_total, 2),
+        "sobra": round(sobra, 2),
+        "meta_restante": round(meta_restante, 2),
+        "meta_mensal": meta_mensal,
+        "meses_restantes": meses_restantes,
+        "gastos_flexiveis": round(gastos_flexiveis, 2),
+        "detalhe_gastos": detalhe_gastos,
     }
+
 
 insights = calcular_insights(df_trans, perfil)
 
-# Inicializar LLM Ollama
+
+# ---------------------------------------------------------------------------
+# 3. LLM
+# ---------------------------------------------------------------------------
+
 @st.cache_resource
 def carregar_llm():
     return Ollama(model="llama3.1:8b", temperature=0.3)
 
+
 llm = carregar_llm()
 
-# System Prompt
-SYSTEM_PROMPT = """
-Você é a Nina, uma Navegadora de Intenções e Números Atípicos, um agente de IA do Bradesco criado para a DIO.
-Você é uma Coach de Micro-Otimização de Hábitos Financeiros.
 
-REGRAS INVARIÁVEIS (ANTI-ALUCINAÇÃO E SEGURANÇA):
-1. ANCORAGEM DE DADOS: Você NÃO pode fornecer nenhum número, data ou fato que não esteja no CONTEXTO abaixo.
-2. FONTE OBRIGATÓRIA: Toda vez que mencionar um dado do cliente, finalize com [Fonte: arquivo].
-3. CÁLCULO EXPLÍCITO: Mostre a fórmula usada. Ex: [Calculado com: Meta / Meses].
-4. NÃO INVISTA, SUGIRA: Nunca ordene "Invista em X". Diga "O produto Y parece alinhado".
-5. FALLBACK DE IGNORÂNCIA: Se perguntarem algo fora dos dados, responda que não tem essa informação.
+# ---------------------------------------------------------------------------
+# 4. SYSTEM PROMPT
+# FIX: usa template seguro sem .format() para evitar KeyError em chaves JSON
+# ---------------------------------------------------------------------------
 
-TOM DE VOZ:
-- Analítica, mas acolhedora.
-- Educativa: explique o porquê dos números.
-- Use o nome do cliente: {nome_cliente}.
-"""
+def montar_system_prompt(nome_cliente: str) -> str:
+    return (
+        f"Você é a Nina, uma Navegadora de Intenções e Números Atípicos, "
+        f"um agente de IA do Bradesco criado para a DIO.\n"
+        f"Você é uma Coach de Micro-Otimização de Hábitos Financeiros.\n\n"
+        f"SEU OBJETIVO PRINCIPAL:\n"
+        f"Cruzar a intenção declarada pelo cliente (metas no JSON) com o comportamento "
+        f"real (transações no CSV) para revelar padrões escondidos e sugerir micro-ajustes "
+        f"que aceleram metas sem sacrificar qualidade de vida.\n\n"
+        f"REGRAS INVARIÁVEIS (ANTI-ALUCINAÇÃO E SEGURANÇA):\n"
+        f"1. ANCORAGEM DE DADOS: Você NÃO pode fornecer nenhum número, data ou fato que "
+        f"não esteja explicitamente no [BLOCO DE CONTEXTO] ou que não seja resultado de "
+        f"cálculo matemático básico.\n"
+        f"2. FONTE OBRIGATÓRIA: Toda vez que mencionar um dado do cliente, finalize com "
+        f"[Fonte: arquivo]. Ex: [Fonte: transacoes.csv, Outubro].\n"
+        f"3. CÁLCULO EXPLÍCITO: Mostre a fórmula usada. "
+        f"Ex: [Calculado com: Meta Restante / Meses Restantes].\n"
+        f"4. NÃO INVISTA, SUGIRA: Nunca ordene 'Invista em X'. Diga: 'O produto Y parece "
+        f"alinhado ao seu perfil. Quer simular?'\n"
+        f"5. FALLBACK DE IGNORÂNCIA: Se a pergunta estiver fora dos dados disponíveis, "
+        f"responda: 'Isso está fora da minha alçada de Coach de Hábitos. Não tenho bola "
+        f"de cristal para o mercado, mas tenho uma lupa para o seu extrato. Quer que eu "
+        f"analise seus gastos de Outubro?'\n\n"
+        f"TOM DE VOZ: Analítica e acolhedora. Use o nome do cliente: {nome_cliente}.\n"
+        f"Seja educativa — explique o porquê dos números. Use metáforas simples.\n\n"
+        f"ESTRUTURA DA RESPOSTA:\n"
+        f"1. Validação da pergunta.\n"
+        f"2. Insight com dado exato do contexto + [Fonte] ou [Calculado com].\n"
+        f"3. Micro-sugestão acionável ou oferta de simulação.\n"
+    )
 
-# Interface do chat
+
+# ---------------------------------------------------------------------------
+# 5. MONTAGEM DO CONTEXTO RAG
+# FIX: não envia df cru — envia apenas métricas derivadas e listas estruturadas
+# FIX: inclui Produtos e Histórico (que estavam no bloco solto/corrompido)
+# ---------------------------------------------------------------------------
+
+def montar_contexto(insights: dict, perfil: dict, produtos: list, df_hist: pd.DataFrame, pergunta: str) -> str:
+    temas_anteriores = df_hist["tema"].dropna().unique().tolist()
+
+    produtos_perfil = [
+        p for p in produtos
+        if p.get("risco", "").lower() in {"baixo", "médio", "medio"}
+    ]
+    produtos_str = "\n".join(
+        f"- {p['nome']} | Risco: {p['risco']} | Liquidez: {p.get('liquidez', 'N/A')}"
+        for p in produtos_perfil
+    )
+
+    detalhe_str = "\n".join(
+        f"  - {cat.capitalize()}: R$ {val:.2f}"
+        for cat, val in insights["detalhe_gastos"].items()
+    )
+
+    return (
+        f"[BLOCO DE CONTEXTO - DADOS CALCULADOS EM TEMPO DE EXECUÇÃO]\n\n"
+        f"DADOS DO CLIENTE (Fonte: perfil_investidor.json):\n"
+        f"- Nome: {perfil['nome']}\n"
+        f"- Perfil: {perfil['perfil_investidor']}\n"
+        f"- Objetivo principal: {perfil['objetivo_principal']}\n"
+        f"- Meta: {perfil['metas'][0]['descricao']} | Valor necessário: R$ {perfil['metas'][0]['valor_necessario']:.2f}\n"
+        f"- Já acumulado: R$ {perfil['reserva_emergencia_atual']:.2f}\n"
+        f"- Faltam: R$ {insights['meta_restante']:.2f} em {insights['meses_restantes']} meses\n\n"
+        f"ANÁLISE DO MÊS (Fonte: transacoes.csv + cálculos Python):\n"
+        f"- Receita: R$ {insights['receita']:.2f}\n"
+        f"- Gastos totais: R$ {insights['gasto_total']:.2f}\n"
+        f"- Sobra do mês: R$ {insights['sobra']:.2f}\n"
+        f"- Necessário para a meta: R$ {insights['meta_mensal']:.2f}/mês "
+        f"[Calculado com: {insights['meta_restante']} / {insights['meses_restantes']}]\n"
+        f"- Gastos flexíveis (otimizáveis): R$ {insights['gastos_flexiveis']:.2f}\n"
+        f"{detalhe_str}\n\n"
+        f"PRODUTOS DISPONÍVEIS PARA PERFIL {perfil['perfil_investidor'].upper()} "
+        f"(Fonte: produtos_financeiros.json):\n"
+        f"{produtos_str}\n\n"
+        f"HISTÓRICO DE TEMAS JÁ DISCUTIDOS (Fonte: historico_atendimento.csv):\n"
+        f"- {', '.join(temas_anteriores) if temas_anteriores else 'Nenhum registro anterior'}\n"
+        f"(Se o cliente perguntar sobre um tema já discutido, não explique do zero — "
+        f"contextualize com base no histórico.)\n\n"
+        f"[FIM DO BLOCO DE CONTEXTO]\n\n"
+        f"PERGUNTA DO CLIENTE: {pergunta}\n"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 6. VALIDAÇÃO ANTI-ALUCINAÇÃO
+# Verifica se a resposta cita pelo menos uma fonte antes de exibir
+# ---------------------------------------------------------------------------
+
+def resposta_tem_fonte(resposta: str) -> bool:
+    marcadores = ["[Fonte:", "[Calculado com:", "[Limitação"]
+    return any(m in resposta for m in marcadores)
+
+
+FALLBACK_SEGURO = (
+    "⚠️ Nina não conseguiu ancorar essa resposta nos dados disponíveis. "
+    "Por segurança, a resposta foi bloqueada.\n\n"
+    "Tente reformular a pergunta com foco nos seus gastos de Outubro ou nas suas metas cadastradas."
+)
+
+
+# ---------------------------------------------------------------------------
+# 7. INTERFACE
+# ---------------------------------------------------------------------------
+
 col1, col2 = st.columns([2, 1])
 
 with col1:
     st.subheader("💬 Converse com a Nina")
-    
+
     if "messages" not in st.session_state:
-        st.session_state.messages = []
-        # Mensagem de boas-vindas proativa
-        msg_boas_vindas = f"""Olá, {perfil['nome']}! 🌟
+        msg_boas_vindas = (
+            f"Olá, {perfil['nome']}! 🌟\n\n"
+            f"Já analisei seus dados de Outubro e tenho boas notícias:\n"
+            f"- Sua sobra foi de **R$ {insights['sobra']:.2f}** [Fonte: transacoes.csv]\n"
+            f"- Para bater sua meta, você precisa de **R$ {insights['meta_mensal']}/mês** "
+            f"[Calculado com: {insights['meta_restante']} / {insights['meses_restantes']} meses]\n"
+            f"- Você está indo muito bem! 🎉\n\n"
+            f"Percebi **R$ {insights['gastos_flexiveis']:.2f}** em gastos flexíveis. "
+            f"Que tal o **Desafio dos 15%**? Reduzindo só 15% desses gastos, "
+            f"você antecipa sua meta em ~1 mês!\n\n"
+            f"Pergunte o que quiser sobre seus gastos, metas ou produtos disponíveis."
+        )
+        st.session_state.messages = [{"role": "assistant", "content": msg_boas_vindas}]
 
-Já analisei seus dados de Outubro e tenho boas notícias:
-- Sua sobra foi de R$ {insights['sobra']:.2f} [Fonte: transacoes.csv]
-- Para bater sua meta de reserva, você precisa de R$ {insights['meta_mensal']} por mês [Calculado com: {insights['meta_restante']} / 8 meses]
-- Você está INDO MUITO BEM! 🎉
-
-Percebi que você tem R$ {insights['gastos_flexiveis']:.2f} em gastos flexíveis. Que tal fazermos o 'Desafio dos 15%'? Reduzindo só 15% disso, você antecipa sua meta em 1 mês!
-
-Pergunte o que quiser sobre seus gastos, metas ou investimentos!"""
-        st.session_state.messages.append({"role": "assistant", "content": msg_boas_vindas})
-    
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
-    
+
     if prompt := st.chat_input("Pergunte sobre suas finanças..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
-        
+
         with st.chat_message("assistant"):
             with st.spinner("Nina está analisando seus dados..."):
-                # Montar contexto
-                contexto = f"""
-CONTEXTO DO CLIENTE:
-Nome: {perfil['nome']}
-Perfil: {perfil['perfil_investidor']}
-Objetivo: {perfil['objetivo_principal']}
-Sobra do mês: R$ {insights['sobra']:.2f}
-Meta mensal necessária: R$ {insights['meta_mensal']}
-Gastos flexíveis (Restaurante/Uber/Netflix): R$ {insights['gastos_flexiveis']:.2f}
+                system_prompt = montar_system_prompt(perfil["nome"])
+                contexto = montar_contexto(insights, perfil, produtos, df_hist, prompt)
+                full_prompt = system_prompt + "\n\n" + contexto
 
-Últimas transações:
-{df_trans.to_string()}
-
-Produtos disponíveis:
-{json.dumps(produtos, indent=2, ensure_ascii=False)}
-
-PERGUNTA DO CLIENTE: {prompt}
-"""
-
-Produtos disponíveis para perfil moderado:
-{json.dumps(produtos, indent=2, ensure_ascii=False)}
-
-Histórico de atendimentos anteriores:
-{df_hist['tema'].unique().tolist()}
-
-PERGUNTA DO CLIENTE: {prompt}
-"""
-                
-                full_prompt = SYSTEM_PROMPT.format(nome_cliente=perfil['nome']) + "\n\n" + contexto
-                
                 resposta = llm.invoke(full_prompt)
-                st.markdown(resposta)
-                st.session_state.messages.append({"role": "assistant", "content": resposta})
+
+                if resposta_tem_fonte(resposta):
+                    st.markdown(resposta)
+                    st.session_state.messages.append({"role": "assistant", "content": resposta})
+                else:
+                    st.warning(FALLBACK_SEGURO)
+                    st.session_state.messages.append({"role": "assistant", "content": FALLBACK_SEGURO})
 
 with col2:
-    st.subheader("📊 Painel do João")
+    st.subheader(f"📊 Painel de {perfil['nome'].split()[0]}")
     st.metric("Sobra de Outubro", f"R$ {insights['sobra']:.2f}")
-    st.metric("Meta Mensal Necessária", f"R$ {insights['meta_mensal']}")
-    st.metric("Gastos Flexíveis", f"R$ {insights['gastos_flexiveis']:.2f}")
-    
+    st.metric("Aporte mensal necessário", f"R$ {insights['meta_mensal']:.2f}")
+    st.metric(
+        "Gastos flexíveis",
+        f"R$ {insights['gastos_flexiveis']:.2f}",
+        help="Lazer + Alimentação fora + Transporte por app",
+    )
+    st.metric("Meses restantes para a meta", insights["meses_restantes"])
+
     st.divider()
+
     st.caption("🔒 Dados processados 100% localmente via Ollama")
+    st.caption(f"Modelo ativo: llama3.1:8b")
