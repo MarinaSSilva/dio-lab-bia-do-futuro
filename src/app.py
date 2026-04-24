@@ -32,13 +32,14 @@ df_trans, df_hist, perfil, produtos = carregar_dados()
 
 
 # ---------------------------------------------------------------------------
-# 2. CÁLCULO DE INSIGHTS
-# FIX: meses_restantes calculado dinamicamente (antes era hardcoded = 8)
-# FIX: gastos_flexiveis agora filtra corretamente por tipo E categoria
+# 2. CALCULO DE INSIGHTS
+# FIX: tipo sem acento ("saida"/"entrada") para bater com o CSV
+# FIX: meses_restantes calculado dinamicamente
+# FIX: gastos_flexiveis filtra corretamente por tipo E categoria
 # ---------------------------------------------------------------------------
 
 def calcular_insights(df_trans: pd.DataFrame, perfil: dict) -> dict:
-    saidas = df_trans[df_trans["tipo"] == "saída"]
+    saidas = df_trans[df_trans["tipo"] == "saida"]
     entradas = df_trans[df_trans["tipo"] == "entrada"]
 
     gasto_total = saidas["valor"].sum()
@@ -48,8 +49,10 @@ def calcular_insights(df_trans: pd.DataFrame, perfil: dict) -> dict:
     meta = perfil["metas"][0]
     meta_restante = meta["valor_necessario"] - perfil["reserva_emergencia_atual"]
 
-    # Calcula meses restantes até o prazo da meta (ex: "2026-06-01")
-    prazo = date.fromisoformat(meta.get("prazo", "2026-06-01"))
+    prazo_str = meta.get("prazo", "2026-06-01")
+    if len(prazo_str) == 7:
+        prazo_str += "-01"
+    prazo = date.fromisoformat(prazo_str)
     hoje = date.today()
     meses_restantes = max(
         1,
@@ -58,13 +61,11 @@ def calcular_insights(df_trans: pd.DataFrame, perfil: dict) -> dict:
 
     meta_mensal = round(meta_restante / meses_restantes, 2)
 
-    # Gastos discricionários (saídas nas categorias flexíveis)
     categorias_flexiveis = {"lazer", "alimentacao", "transporte"}
     gastos_flexiveis = saidas[
         saidas["categoria"].str.lower().isin(categorias_flexiveis)
     ]["valor"].sum()
 
-    # Detalhe por categoria para o prompt (evita enviar df cru)
     detalhe_gastos = (
         saidas[saidas["categoria"].str.lower().isin(categorias_flexiveis)]
         .groupby("categoria")["valor"]
@@ -102,7 +103,7 @@ llm = carregar_llm()
 
 # ---------------------------------------------------------------------------
 # 4. SYSTEM PROMPT
-# FIX: usa template seguro sem .format() para evitar KeyError em chaves JSON
+# FIX: usa f-string direta para evitar KeyError com chaves JSON no .format()
 # ---------------------------------------------------------------------------
 
 def montar_system_prompt(nome_cliente: str) -> str:
@@ -139,8 +140,9 @@ def montar_system_prompt(nome_cliente: str) -> str:
 
 # ---------------------------------------------------------------------------
 # 5. MONTAGEM DO CONTEXTO RAG
-# FIX: não envia df cru — envia apenas métricas derivadas e listas estruturadas
-# FIX: inclui Produtos e Histórico (que estavam no bloco solto/corrompido)
+# FIX: campo "meta" no lugar de "descricao" (correto no JSON)
+# FIX: campo "indicado_para" no lugar de "liquidez" (que não existe no JSON)
+# FIX: inclui Produtos e Histórico que estavam no bloco corrompido da versão anterior
 # ---------------------------------------------------------------------------
 
 def montar_contexto(insights: dict, perfil: dict, produtos: list, df_hist: pd.DataFrame, pergunta: str) -> str:
@@ -148,10 +150,10 @@ def montar_contexto(insights: dict, perfil: dict, produtos: list, df_hist: pd.Da
 
     produtos_perfil = [
         p for p in produtos
-        if p.get("risco", "").lower() in {"baixo", "médio", "medio"}
+        if p.get("risco", "").lower() in {"baixo", "medio", "médio"}
     ]
     produtos_str = "\n".join(
-        f"- {p['nome']} | Risco: {p['risco']} | Liquidez: {p.get('liquidez', 'N/A')}"
+        f"- {p['nome']} | Risco: {p['risco']} | Indicado para: {p.get('indicado_para', 'N/A')}"
         for p in produtos_perfil
     )
 
@@ -166,7 +168,7 @@ def montar_contexto(insights: dict, perfil: dict, produtos: list, df_hist: pd.Da
         f"- Nome: {perfil['nome']}\n"
         f"- Perfil: {perfil['perfil_investidor']}\n"
         f"- Objetivo principal: {perfil['objetivo_principal']}\n"
-        f"- Meta: {perfil['metas'][0]['descricao']} | Valor necessário: R$ {perfil['metas'][0]['valor_necessario']:.2f}\n"
+        f"- Meta: {perfil['metas'][0]['meta']} | Valor necessário: R$ {perfil['metas'][0]['valor_necessario']:.2f}\n"
         f"- Já acumulado: R$ {perfil['reserva_emergencia_atual']:.2f}\n"
         f"- Faltam: R$ {insights['meta_restante']:.2f} em {insights['meses_restantes']} meses\n\n"
         f"ANÁLISE DO MÊS (Fonte: transacoes.csv + cálculos Python):\n"
@@ -268,4 +270,4 @@ with col2:
     st.divider()
 
     st.caption("🔒 Dados processados 100% localmente via Ollama")
-    st.caption(f"Modelo ativo: llama3.1:8b")
+    st.caption("Modelo ativo: llama3.1:8b")
