@@ -9,8 +9,6 @@ Esta pasta contém o código-fonte do agente financeiro **Nina**, uma aplicaçã
 ```
 src/
 ├── app.py # Aplicação principal (Interface Streamlit)
-├── utils.py # Motor de contexto e pré-processamento de dados
-├── prompts.py # System Prompt e templates (opcional)
 └── requirements.txt # Dependências do projeto
 ```
 
@@ -19,8 +17,6 @@ src/
 | Arquivo | Descrição |
 |---------|-----------|
 | `app.py` | Interface do usuário em Streamlit. Gerencia o estado da sessão, carrega os dados mockados e faz a comunicação com o Ollama. |
-| `utils.py` | Funções auxiliares: `carregar_dados()`, `calcular_insights()` e `formatar_contexto()`. Responsável por cruzar CSV e JSON para gerar o "Contexto Estruturado" enviado à LLM. |
-| `prompts.py` | (Opcional) Armazena o System Prompt e exemplos de Few-Shot separados do código principal para melhor organização. |
 | `requirements.txt` | Lista de bibliotecas Python necessárias para execução. |
 
 ---
