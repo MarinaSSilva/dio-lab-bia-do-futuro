@@ -112,6 +112,7 @@ Roteiro de 3 minutos focado em:
 📁 dio-lab-bia-do-futuro/
 │
 ├── 📄 README.md # Você está aqui
+│ ├── 🏗️ mermaid - Arquitetura
 │
 ├── 📁 data/ # Dados mockados fornecidos pela DIO
 │ ├── historico_atendimento.csv
@@ -136,8 +137,8 @@ Roteiro de 3 minutos focado em:
 │   ├── RoteiroLab.md               ← Roteiro com detalhes do projeto
 │   ├── badges.md                   ← Código das badges
 │   └── nina-logo.png               ← Sua logo
-│
-├── 🏗️ mermaid - Arquitetura
+
+
 ```
 ---
 
