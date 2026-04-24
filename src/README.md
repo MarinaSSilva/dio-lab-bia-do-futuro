@@ -37,17 +37,17 @@ plotly>=5.18.0
 
 ## Explicação de cada dependência:
 
-Interface e Visualização
-streamlit: Framework para interface web interativa
-plotly: Gráficos interativos (evolução da meta, progresso)
+### Interface e Visualização
+* streamlit: Framework para interface web interativa
+* plotly: Gráficos interativos (evolução da meta, progresso)
 
-Dados
-pandas: Leitura e manipulação dos arquivos CSV/JSON
+### Dados
+* pandas: Leitura e manipulação dos arquivos CSV/JSON
 
-IA e LLM
-ollama: Comunicação com modelos locais
-langchain: Orquestração de prompts
-langchain-community: Integração LangChain + Ollama
+### IA e LLM
+* ollama: Comunicação com modelos locais
+* langchain: Orquestração de prompts
+* langchain-community: Integração LangChain + Ollama
 
 ---
 
