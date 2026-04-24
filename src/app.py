@@ -3,6 +3,7 @@ import pandas as pd
 import json
 from datetime import date
 from langchain_community.llms import Ollama
+import plotly.express as px
 
 st.set_page_config(page_title="Nina - Coach Financeira", page_icon="🧠", layout="wide")
 
@@ -266,6 +267,55 @@ with col2:
         help="Lazer + Alimentação fora + Transporte por app",
     )
     st.metric("Meses restantes para a meta", insights["meses_restantes"])
+
+    # Gráfico de evolução da meta
+    st.subheader("📈 Evolução da Meta")
+    
+    meta_total = perfil['metas'][0]['valor_necessario']
+    acumulado = perfil['reserva_emergencia_atual']
+    faltante = meta_total - acumulado
+    
+    fig = px.bar(
+        x=["Reserva de Emergência"],
+        y=[acumulado],
+        title=f"Progresso: R$ {acumulado:.2f} de R$ {meta_total:.2f}",
+        labels={"x": "", "y": "Valor (R$)"},
+        color_discrete_sequence=["#10B981"],  # Verde
+        text=[f"R$ {acumulado:.2f}"]
+    )
+    
+    fig.add_bar(
+        x=["Reserva de Emergência"],
+        y=[faltante],
+        name="Faltante",
+        marker_color="#E5E7EB",  # Cinza claro
+        text=[f"Falta R$ {faltante:.2f}"]
+    )
+    
+    fig.update_layout(
+        barmode="stack",
+        showlegend=False,
+        height=300,
+        margin=dict(l=20, r=20, t=40, b=20),
+    )
+    
+    fig.update_traces(
+        selector={"name": "Acumulado"},
+        textposition="inside",
+        textfont=dict(size=12, color="white"),
+    )
+
+    fig.update_traces(
+        selector={"name": "Faltante"},
+        textposition="inside",
+        textfont=dict(size=12, color="#6B7280"),
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Percentual de progresso
+    percentual = (acumulado / meta_total) * 100
+    st.progress(percentual / 100, text=f"{percentual:.1f}% concluído")
 
     st.divider()
 
