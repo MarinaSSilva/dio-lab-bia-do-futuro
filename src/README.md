@@ -30,6 +30,8 @@ pandas>=2.0.0
 ollama>=0.1.0
 langchain>=0.1.0
 langchain-community>=0.1.0
+plotly>=5.18.0
+
 ```
 ---
 
@@ -57,7 +59,7 @@ langchain-community: Integração específica com Ollama.
 * Após instalar, baixe o modelo recomendado:
 
 ```
-ollama pull llama3.1:8b
+ollama pull phi3
 ```
 
 * Verifique se o serviço está ativo:
@@ -83,6 +85,14 @@ python -m venv venv
 # Ativação (Windows)
 venv\Scripts\activate
 
+# O PowerShell bloqueia scripts por segurança por padrão
+
+# Opção 1 — Liberar só para a sessão atual (mais seguro, recomendado) - Vai perguntar se confirma — digita S e aperta Enter. Depois ativa normalmente
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Opção 2 — Ativar usando o comando alternativo - Se não quiser mudar a política, ativa assim direto:
+& ".\venv\Scripts\Activate.ps1"
+
 # Ativação (Linux/Mac)
 source venv/bin/activate
 ```
@@ -90,7 +100,7 @@ source venv/bin/activate
 3. Instale as dependências:
 
 ```
-pip install -r requirements.txt
+pip install streamlit pandas langchain-community ollama
 ```
 
 4. Execute a aplicação:
@@ -131,7 +141,7 @@ Trocar o Modelo Ollama
 No arquivo app.py, localize a linha:
 
 ```
-llm = Ollama(model="llama3.1:8b")
+llm = Ollama(model="phi3")
 ```
 
 ### Substitua por qualquer modelo disponível localmente:
@@ -198,19 +208,3 @@ Desempenho: Recomenda-se mínimo de 8GB RAM para llama3.1:8b.
 ```
 Esse `README.md` dentro da pasta `src/` complementa o README principal, fornecendo todas as instruções técnicas para quem quiser rodar o código. 🚀
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
