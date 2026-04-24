@@ -95,7 +95,7 @@ insights = calcular_insights(df_trans, perfil)
 
 @st.cache_resource
 def carregar_llm():
-    return Ollama(model="llama3.1:8b", temperature=0.3)
+    return Ollama(model="phi3", temperature=0.3)
 
 
 llm = carregar_llm()
@@ -270,4 +270,4 @@ with col2:
     st.divider()
 
     st.caption("🔒 Dados processados 100% localmente via Ollama")
-    st.caption("Modelo ativo: llama3.1:8b")
+    st.caption("Modelo ativo: phi3")
