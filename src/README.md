@@ -102,7 +102,7 @@ source venv/bin/activate
 3. Instale as dependências:
 
 ```
-pip install streamlit pandas langchain-community ollama
+pip install streamlit pandas langchain-community ollama plotly
 ```
 
 4. Execute a aplicação:
