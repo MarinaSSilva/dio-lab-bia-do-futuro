@@ -188,7 +188,7 @@ def montar_contexto(insights: dict, perfil: dict, produtos: list, df_hist: pd.Da
         f"(Se o cliente perguntar sobre um tema já discutido, não explique do zero — "
         f"contextualize com base no histórico.)\n\n"
         f"[FIM DO BLOCO DE CONTEXTO]\n\n"
-        f"PERGUNTA DO CLIENTE: {pergunta}\n"
+        f"Responda diretamente à seguinte pergunta: {pergunta}\n"
     )
 
 
