@@ -91,7 +91,7 @@ flowchart TD
     H -->|Check: Citou fonte?| I{Segurança}
     
     I -->|Sim| J[📝 Resposta Final + Simulação]
-    I -->|Não / Alucinação| K[🚫 Bloqueio: "Não posso afirmar isso"]
+    I -->|Não / Alucinação| K[🚫 Bloqueio: Não posso afirmar isso]
     
     J --> B2
     K --> B2
