@@ -131,12 +131,13 @@ Roteiro de 3 minutos focado em:
 │ ├── requirements.txt    # Dependências do projeto
 │ └── README.md           # Instruções de execução
 │
-└── 📁 assets/ # Roteiro, Badges e Logo da Nina
+├── 📁 assets/ # Roteiro, Badges e Logo da Nina
 │   ├── README.md                   ← Explicação da pasta (original)
 │   ├── RoteiroLab.md               ← Roteiro com detalhes do projeto
 │   ├── badges.md                   ← Código das badges
 │   └── nina-logo.png               ← Sua logo
-
+│
+├── 🏗️ mermaid - Arquitetura
 ```
 ---
 
