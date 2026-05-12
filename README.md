@@ -13,7 +13,7 @@
 
 ## 📌 Contexto
 
-Os assistentes virtuais no setor financeiro estão evoluindo de simples chatbots reativos para **agentes inteligentes e proativos**. Neste desafio, desenvolvemos a **Nina**, um agente que utiliza IA Generativa para resolver a **Dissonância Comportamental Financeira** — a lacuna entre o que o cliente planeja e o que realmente gasta.
+Os assistentes virtuais no setor financeiro estão evoluindo de simples chatbots reativos para **agentes inteligentes e proativos**. Neste desafio, desenvolvi a **Nina**, um agente que utiliza IA Generativa para resolver a **Dissonância Comportamental Financeira**. A lacuna entre o que o cliente planeja e o que realmente gasta.
 
 A Nina atua como uma **Coach de Micro-Otimização de Hábitos**, focada em:
 - **Antecipar padrões** de comportamento nos dados de transações
