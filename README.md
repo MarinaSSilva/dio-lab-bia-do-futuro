@@ -6,11 +6,8 @@
 ![Badge](https://img.shields.io/badge/Parceria-Bradesco%20%7C%20DIO-orange)
 
 ## 🎬 Demonstração
-
 [
-
-![Assista à demonstração da Nina](https://img.shields.io/badge/▶️_Ver_Demo-Google_Drive-blue)
-
+![▶️ Ver Demo](https://img.shields.io/badge/▶️_Ver_Demo-Google_Drive-blue)
 ](https://drive.google.com/file/d/1Nky1lSFgdkr6oKgOm1sorlVuNl1gyDum/view?usp=drivesdk)
 
 
