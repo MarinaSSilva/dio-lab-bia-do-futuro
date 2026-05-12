@@ -5,6 +5,15 @@
 ![Badge](https://img.shields.io/badge/Framework-Streamlit-red)
 ![Badge](https://img.shields.io/badge/Parceria-Bradesco%20%7C%20DIO-orange)
 
+## 🎬 Demonstração
+
+[
+
+![Assista à demonstração da Nina](https://img.shields.io/badge/▶️_Ver_Demo-Google_Drive-blue)
+
+](https://drive.google.com/file/d/1Nky1lSFgdkr6oKgOm1sorlVuNl1gyDum/view?usp=drivesdk)
+
+
 ## 📌 Contexto
 
 Os assistentes virtuais no setor financeiro estão evoluindo de simples chatbots reativos para **agentes inteligentes e proativos**. Neste desafio, desenvolvemos a **Nina**, um agente que utiliza IA Generativa para resolver a **Dissonância Comportamental Financeira** — a lacuna entre o que o cliente planeja e o que realmente gasta.
