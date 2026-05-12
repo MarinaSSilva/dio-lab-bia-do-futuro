@@ -1,4 +1,6 @@
-# 🧠 Nina | Agente de Micro-Otimização Financeira com IA Generativa
+# 🧠 Nina | Navegadora de Intenções e Números Atípicos
+
+Agente de Micro-Otimização Financeira com IA Generativa
 
 ![Badge](https://img.shields.io/badge/Status-Desafio%20DIO%20Concluído-green)
 ![Badge](https://img.shields.io/badge/LLM-Ollama%20(Local)-blue)
@@ -25,7 +27,7 @@ A Nina atua como uma **Coach de Micro-Otimização de Hábitos**, focada em:
 
 ---
 
-## 📋 O Que Entregamos
+## 📋 O Que Entreguei
 
 ### 1. Documentação do Agente
 
